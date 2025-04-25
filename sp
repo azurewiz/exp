@@ -1,5 +1,8 @@
 //blynk
 
+#define BLYNK_TEMPLATE_NAME "now"
+#define BLYNK_AUTH_TOKEN "rWkFhEhJV8Up1i03wZNEzwThFWg8ke2z"
+
 #define BLYNK_PRINT Serial
 /* Fill in information from Blynk Device Info here */
 #define BLYNK_TEMPLATE_ID "TMPL3-1h2bOTe"
