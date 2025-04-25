@@ -1,0 +1,139 @@
+
+//xbee
+#include <SoftwareSerial.h>
+
+// ———– PIN DEFINITIONS ———–
+// These are *NOT* the hardware-Serial pins (0 & 1).
+#define XBEE_RX_PIN 2   // connect to Zigbee TX
+#define XBEE_TX_PIN 3   // connect to Zigbee RX
+
+SoftwareSerial xbee(XBEE_RX_PIN, XBEE_TX_PIN);
+
+void setup() {
+  // debug / USB serial
+  Serial.begin(9600);
+  while (!Serial) { ; }      // wait for Serial Monitor
+  
+  // XBee link
+  xbee.begin(9600);
+
+  Serial.println(F("Serial<>XBee bridge ready."));
+  Serial.println(F("Type into this monitor to send to Zigbee."));
+}
+
+void loop() {
+  // 1) Forward any incoming from XBee to the PC
+  if (xbee.available()) {
+    char c = xbee.read();
+    Serial.write(c);         // raw byte, so control chars pass through
+  }
+
+  // 2) Forward any typed in the Serial Monitor down to the XBee
+  if (Serial.available()) {
+    char c = Serial.read();
+    xbee.write(c);
+  }
+}
+
+
+
+//blue
+#include <SoftwareSerial.h>
+//Create software serial object to communicate with HC-05
+SoftwareSerial mySerial(3, 2); //HC-05 Tx & Rx is connected to Arduino #3 & #2
+void setup()
+{
+//Begin serial communication with Arduino and Arduino IDE (Serial Monitor)
+Serial.begin(9600);
+mySerial.begin(9600); //Begin serial communication with Arduino and HC-05
+Serial.println("Initializing...");
+Serial.println("The device started, now you can pair it with bluetooth!");
+}
+void loop()
+{
+if(Serial.available())
+{
+mySerial.write(Serial.read());//Forward what Serial received to Software Serial Port
+}
+if(mySerial.available())
+{
+Serial.write(mySerial.read());//Forward what Software Serial received to Serial Port
+}
+delay(20);
+}
+
+
+//temp
+#include <DHT11.h>
+DHT11 dht11(2);
+void setup() {
+Serial.begin(9600);
+}
+void loop() {
+int temperature = 0;
+int humidity = 0;
+int result = dht11.readTemperatureHumidity(temperature, humidity);
+if (result == 0) {
+Serial.print("Temperature: ");
+Serial.print(temperature);
+Serial.print(" °C\tHumidity: ");
+Serial.print(humidity);
+Serial.println(" %");
+}
+else {
+Serial.println(DHT11::getErrorString(result));
+}
+
+
+//ultr
+#define echoPin 2 // attach pin D2 Arduino to pin Echo of HC-SR04
+#define trigPin 3 //attach pin D3 Arduino to pin Trig of HC-SR04
+// defines variables
+long duration; // variable for the duration of sound wave travel
+int distance; // variable for the distance measurement
+void setup() {
+pinMode(trigPin, OUTPUT); // Sets the trigPin as an OUTPUT
+pinMode(echoPin, INPUT); // Sets the echoPin as an INPUT
+Serial.begin(9600); // // Serial Communication is starting with 9600 of baudrate speed
+Serial.println("Ultrasonic Sensor HC-SR04 Test"); // print some text in Serial Monitor
+Serial.println("with Arduino UNO R3");
+}
+void loop() {
+digitalWrite(trigPin, LOW); // Clears the trigPin condition
+delayMicroseconds(2);
+digitalWrite(trigPin, HIGH); // Sets the trigPin HIGH (ACTIVE) for 10 microseconds
+delayMicroseconds(10);
+digitalWrite(trigPin, LOW);
+duration = pulseIn(echoPin, HIGH); // Reads the echoPin, returns the sound wave travel time in microseconds
+// Calculating the distance
+distance = duration * 0.034 / 2; // Speed of sound wave divided by 2 (go and back)
+// Displays the distance on the Serial Monitor
+Serial.print("Distance: ");
+Serial.print(distance);
+Serial.println(" cm");
+}
+
+//ir
+const int irSensorPin = 2; // Change this to the appropriate pin
+void setup() {
+// Initialize Serial communication
+Serial.begin(9600);
+// Initialize the IR sensor pin as an INPUT
+pinMode(irSensorPin, INPUT);
+}
+void loop() {
+// Read the IR sensor value
+int sensorValue = digitalRead(irSensorPin);
+// Check if an obstacle is detected
+if (sensorValue == LOW)
+{
+// Obstacle detected
+Serial.println("Obstacle detected!");
+}
+else {
+// No obstacle detected
+Serial.println("No obstacle detected.");
+}
+}
+
+
